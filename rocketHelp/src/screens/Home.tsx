@@ -1,30 +1,41 @@
 import { HStack, IconButton, VStack, useTheme, Text, Heading, FlatList, Center } from 'native-base';
+import { useNavigation } from '@react-navigation/native'
 import { SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
-import { ChatTeardropText} from 'phosphor-react-native';
+import { ChatTeardropText } from 'phosphor-react-native';
 
 import Logo from '../assets/logo_secondary.svg'
 
 import { Filter } from '../components/Filter';
-import { Button } from '../components/Button'
+import { Button } from '../components/Button';
 import { Order, OrderProps } from '../components/order';
-import { color } from 'native-base/lib/typescript/theme/styled-system';
+
 
 
 export function Home() {
 
     const [statusSelected, setStatusSelected] = useState<'open' | 'closed'>('open');
     const [orders, setOrders] = useState<OrderProps[]>([
-        // {
-        //     id: '123',
-        //     patrimony: '123456',
-        //     when: '18/06/2022 as 10:10',
-        //     status: 'open'
-        // }
-   
-    ])
+        {
+            id: '123',
+            patrimony: '123456',
+            when: '18/06/2022 as 10:10',
+            status: 'open'
+        }
+
+    ]);
 
     const { colors } = useTheme();
+    const navigation = useNavigation();
+
+
+    function handleNewOrder() {
+        navigation.navigate('new')
+    }
+
+    function handleOpenDetails(orderId: string){
+       navigation.navigate('details', { orderId })
+    }
 
     return (
         <VStack flex={1} pb={6} bg="gray.700">
@@ -76,12 +87,12 @@ export function Home() {
                 <FlatList
                     data={orders}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <Order data={item} />}
+                    renderItem={({ item }) => <Order data={item} onPress={ () => handleOpenDetails(item.id)} />}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100 }}
-                    ListEmptyComponent={ () => (
+                    ListEmptyComponent={() => (
                         <Center>
-                            <ChatTeardropText color={colors.gray[300]} size={40}/>
+                            <ChatTeardropText color={colors.gray[300]} size={40} />
                             <Text color="gray.300" fontSize="xl" mt={6} textAlign="center">
                                 Você ainda não possui {'\n'}
                                 solicitações {statusSelected === 'open' ? 'em andamento' : 'finalizados'}
@@ -90,7 +101,7 @@ export function Home() {
                     )}
                 />
 
-                <Button title="Nova Solicitação" />
+                <Button title="Nova Solicitação" onPress={handleNewOrder} />
             </VStack>
         </VStack>
     );
